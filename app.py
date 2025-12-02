@@ -175,10 +175,9 @@ with col1:
     
     st.header("🌍 Job Preferences")
     country = st.selectbox("Target Country", 
-        ["United States", "India", "United Kingdom", "Canada", "Germany", "Australia"])
+        ["United States", "Pakistan", "United Kingdom", "Canada", "Germany", "Australia"])
     work_type = st.selectbox("Work Type", 
         ["Full-Time", "Part-Time", "Contract", "Temporary"])
-    company_size = st.number_input("Company Size", min_value=100, value=5000, step=1000)
 
 with col2:
     st.header("⚙️ Manual Override (Optional)")
@@ -187,13 +186,6 @@ with col2:
     manual_override = st.checkbox("Use manual input instead of CV")
     
     if manual_override:
-        manual_qual = st.selectbox("Qualifications", 
-            ["PhD", "MBA", "M.Com", "B.Tech", "B.Com", "BBA", "BCA"])
-        col_exp1, col_exp2 = st.columns(2)
-        with col_exp1:
-            manual_min = st.number_input("Min Exp (years)", 0, 20, 0)
-        with col_exp2:
-            manual_max = st.number_input("Max Exp (years)", 0, 25, 2)
         manual_skills = st.text_area("Skills (comma-separated)", 
             "python, sql, machine learning")
     
@@ -209,12 +201,12 @@ if predict_btn:
         with st.spinner("Analyzing..."):
             if manual_override:
                 profile_data = {
-                    "Qualifications": manual_qual,
+                    "Qualifications": "B.Com",  # Default value used internally
                     "Country": country,
                     "Work Type": work_type,
-                    "Company Size": company_size,
-                    "Min_Experience": manual_min,
-                    "Max_Experience": manual_max,
+                    "Company Size": 5000,  # Default value
+                    "Min_Experience": 0,  # Default value
+                    "Max_Experience": 2,  # Default value
                     "skills": manual_skills
                 }
             else:
@@ -224,7 +216,7 @@ if predict_btn:
                         "Qualifications": parsed["Qualifications"],
                         "Country": country,
                         "Work Type": work_type,
-                        "Company Size": company_size,
+                        "Company Size": 5000,  # Default value
                         "Min_Experience": parsed["Min_Experience"],
                         "Max_Experience": parsed["Max_Experience"],
                         "skills": parsed["skills"]
@@ -247,7 +239,10 @@ if predict_btn:
                 
                 st.markdown("---")
                 st.subheader("📊 Profile Used")
-                st.json(profile_data)
+                # Remove internal fields from display
+                display_data = {k: v for k, v in profile_data.items() 
+                               if k not in ["Qualifications", "Min_Experience", "Max_Experience", "Company Size"]}
+                st.json(display_data)
                 
                 # Salary range estimate
                 sal_min = max(40, salary * 0.85)
@@ -268,10 +263,6 @@ with st.sidebar:
     - Include education section
     - List experience explicitly
     - Add skills section
-    
-    **Supported qualifications:**
-    - PhD, MBA, M.Com
-    - B.Tech, B.Com, BBA, BCA
     """)
     
     st.markdown("---")
